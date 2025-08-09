@@ -9,9 +9,10 @@
   "homepage": "https://25cibm.vercel.app",
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
-    "start": "pnpm prisma migrate && next start",
-    "lint": "next lint"
+    "build": "prisma generate && next build",
+    "start": "next start",
+    "lint": "next lint",
+    "postinstall": "prisma generate"
   },
   "dependencies": {
     "@next/font": "13.1.6",
