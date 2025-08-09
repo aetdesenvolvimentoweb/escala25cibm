@@ -328,7 +328,7 @@ const Graduations = () => {
         </div>
       </div>
 
-      <div
+      {/* <div
         id="paginacao"
         className={`${
           adding || editing || deleting ? "hidden" : "flex"
@@ -354,7 +354,7 @@ const Graduations = () => {
         <button className="pl-2">
           <FiChevronsRight size={20} />
         </button>
-      </div>
+      </div> */}
     </MainLayout>
   );
 };

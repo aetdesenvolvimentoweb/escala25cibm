@@ -356,7 +356,7 @@ const Efetivo = () => {
         </div>
       </div>
 
-      <div
+      {/*  <div
         id="paginacao"
         className={`${
           adding || editing || deleting ? "hidden" : "flex"
@@ -382,7 +382,7 @@ const Efetivo = () => {
         <button className="pl-2">
           <FiChevronsRight size={20} />
         </button>
-      </div>
+      </div> */}
     </MainLayout>
   );
 };
