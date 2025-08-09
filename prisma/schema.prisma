@@ -1,0 +1,120 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model Graduation {
+  id    String @id @default(auto()) @map("_id") @db.ObjectId
+  order Int
+  name  String @unique
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  Military Military[]
+
+  @@map("graduations")
+}
+
+model Military {
+  id           String     @id @default(auto()) @map("_id") @db.ObjectId
+  graduation   Graduation @relation(fields: [graduationId], references: [id])
+  graduationId String     @db.ObjectId
+  rg           Int        @unique
+  name         String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  militaryInGarrison MilitaryInGarrison[] @relation(name: "militaryInGarrison")
+  standbyOfficer     ForceMap[]           @relation(name: "standbyOfficer")
+  adjunct            ForceMap[]           @relation(name: "adjunct")
+  replaced           ServiceExchange[]    @relation(name: "replaced")
+  substitute         ServiceExchange[]    @relation(name: "substitute")
+
+  @@map("military")
+}
+
+model Vehicle {
+  id     String @id @default(auto()) @map("_id") @db.ObjectId
+  name   String @unique
+  status String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  garrison Garrison[]
+
+  @@map("vehicles")
+}
+
+model MilitaryInGarrison {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  military   Military @relation(name: "militaryInGarrison", fields: [militaryId], references: [id])
+  militaryId String   @db.ObjectId
+  scaleType  String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  garrisonIds String[]   @db.ObjectId
+  garrisons   Garrison[] @relation(fields: [garrisonIds], references: [id])
+
+  @@map("militaryInGarrison")
+}
+
+model Garrison {
+  id                    String               @id @default(auto()) @map("_id") @db.ObjectId
+  vehicle               Vehicle              @relation(fields: [vehicleId], references: [id])
+  vehicleId             String               @db.ObjectId
+  militaryInGarrisonIds String[]             @db.ObjectId
+  militaryInGarrison    MilitaryInGarrison[] @relation(fields: [militaryInGarrisonIds], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  forceMapIds String[]   @db.ObjectId
+  forceMap    ForceMap[] @relation(fields: [forceMapIds], references: [id])
+
+  @@map("garrisons")
+}
+
+model ServiceExchange {
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  replaced     Military @relation(name: "replaced", fields: [replacedId], references: [id])
+  replacedId   String   @db.ObjectId
+  substitute   Military @relation(name: "substitute", fields: [substituteId], references: [id])
+  substituteId String   @db.ObjectId
+  initial      DateTime
+  final        DateTime
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  forceMapIds String[]   @db.ObjectId
+  forceMap    ForceMap[] @relation(fields: [forceMapIds], references: [id])
+
+  @@map("serviceExchanges")
+}
+
+model ForceMap {
+  id                  String            @id @default(auto()) @map("_id") @db.ObjectId
+  initialOfService    DateTime
+  standbyOfficer      Military          @relation(name: "standbyOfficer", fields: [standbyOfficerId], references: [id])
+  standbyOfficerId    String            @db.ObjectId
+  adjunct             Military          @relation(name: "adjunct", fields: [adjunctId], references: [id])
+  adjunctId           String            @db.ObjectId
+  garrisonsIds        String[]          @db.ObjectId
+  garrisons           Garrison[]        @relation(fields: [garrisonsIds], references: [id])
+  serviceExchangesIds String[]          @db.ObjectId
+  serviceExchanges    ServiceExchange[] @relation(fields: [serviceExchangesIds], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("forceMaps")
+}
